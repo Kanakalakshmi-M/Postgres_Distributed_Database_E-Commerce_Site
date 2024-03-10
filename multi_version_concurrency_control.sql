@@ -1,6 +1,12 @@
 -- Concurrent transaction using MVCC(Multi-Version Concurrancy Control)
-    select * from customer; -- To display the list of customers
-    select * from products; -- To display the list of products
+/*
+Use case 1:
+The product should only be assigned to one consumer at a time if two distinct customers are attempting to access it with quantity 1. 
+This indicates that the data and the concurrent actions are consistent.
+*/
+
+select * from customer; -- To display the list of customers
+select * from products; -- To display the list of products
 
     -- PL/pgSQL code to handle concurrent transactions:
         CREATE OR REPLACE FUNCTION place_order(
@@ -54,11 +60,11 @@
     from concurrent.futures import ThreadPoolExecutor
 
     # connection details
-    host = "localhost"
+    host = "****" -- provide corresponding host info
     port = 5432
     database = "kl_dpdb_ecommerce_database"
-    user = "postgres"
-    password = "spaceman1236"
+    user = "****" -- provide database username
+    password = "*****" -- provide password of database
     def place_order(product_id, customer_id, quantity, delivery_partner_name, phone_no, email):
         try:
             place_order_connection = psycopg2.connect(
@@ -90,7 +96,8 @@
                 place_order_cursor.close()
             if place_order_connection:
                 place_order_connection.close()
-
+   
+        -- customer details
     if __name__ == "__main__":
         # customer-1
         customer_1_details = ('4d205a90-053f-4db1-a22a-37cc18355798', '52d999b8-de44-489d-8913-7ce999e26c5a', 2, 'robin', '(817) 777-4089', 'robin@example.com')
