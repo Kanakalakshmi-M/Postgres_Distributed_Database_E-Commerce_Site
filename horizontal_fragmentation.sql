@@ -1,4 +1,4 @@
--- Requirement-3:
+-- Insert records
 INSERT INTO customer (id, first_name, last_name, phone_no, email_id, dob, type) VALUES ('5aec2394-4bb8-4dc2-afbf-590f03cd0414', 'tdLmVeuWfq', 'jHgTMhnFTV', '(787) 510-9892', 'tscep@example.com', '1984-11-17', 'regular');
 INSERT INTO customer (id, first_name, last_name, phone_no, email_id, dob, type) VALUES ('82faf519-d1eb-42dc-8406-311d9029dea6', 'uSbvAUfwED', 'xMbqoYjGHo', '(825) 801-7814', 'hioze@example.com', '1973-11-22', 'regular');
 INSERT INTO customer (id, first_name, last_name, phone_no, email_id, dob, type) VALUES ('47580a39-1b9d-472b-a2b6-6b1bf46d1b6c', 'sfNcUcAYai', 'LCJqrPCVIv', '(463) 662-8591', 'omqwo@example.com', '1964-05-18', 'VIP');
@@ -12,30 +12,32 @@ INSERT INTO customer (id, first_name, last_name, phone_no, email_id, dob, type) 
 1200 records.
 
     -- Horizontal Fragmentation:
-        SELECT count(*) from customer;
-        EXPLAIN ANALYZE SELECT * FROM customer WHERE dob BETWEEN '1980-01-01' AND '1990-01-01';
+        SELECT count(*) from customer; -- to display total number os records in customer table
+        EXPLAIN ANALYZE SELECT * FROM customer WHERE dob BETWEEN '1980-01-01' AND '1990-01-01'; -- Analyze the query performance
         select version() -- to find the currect version of postgres
-        create extension pgstattuple -- to create pgstattuple extension
-        select * from pgstattuple('customer'); 
-        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer;
+        create extension pgstattuple -- to create pgstattuple extension to get the statistics on the table
+        select * from pgstattuple('customer');  -- command to get the table
+        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer; -- space occupaid by the table 
 
-        Fragmentation:
+        --Fragmentation: based on the query, created 3 fragments !!
         CREATE TABLE customer_1950_1970 AS SELECT * FROM customer WHERE dob BETWEEN '1950-01-01' AND '1970-12-31';
         CREATE TABLE customer_1971_1990 AS SELECT * FROM customer WHERE dob BETWEEN '1971-01-01' AND '1990-12-31';
         CREATE TABLE customer_1991_2000 AS SELECT * FROM customer WHERE dob BETWEEN '1991-01-01' AND '2000-12-31';
 
-        CREATE INDEX idx_dob ON customer (dob);
+        CREATE INDEX idx_dob ON customer (dob); -- created index, as dob attribute is used
         SELECT * FROM pg_indexes WHERE tablename = 'customer' AND indexname = 'idx_dob'
 
-        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer;
-        VACCUM full customer;
-        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer;
+        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer; -- Get the statistics after the fragmentation
+        VACCUM full customer; -- Vaccum the space of the table
+        select pg_size_pretty(pg_total_relation_size('customer')) "Table_Size", count(*) from customer; -- Get the statistics after the fragmentation
 
-        EXPLAIN ANALYZE SELECT * FROM customer WHERE dob BETWEEN '1980-01-01' AND '1990-01-01';
+        -- Analyze the performance after fragmentation
+        EXPLAIN ANALYZE SELECT * FROM customer WHERE dob BETWEEN '1980-01-01' AND '1990-01-01'; 
         EXPLAIN ANALYZE SELECT * FROM customer_1950_1970 WHERE dob BETWEEN '1980-01-01' AND '1990-01-01';
         EXPLAIN ANALYZE SELECT * FROM customer_1971_1990 WHERE dob BETWEEN '1980-01-01' AND '1990-01-01';
         EXPLAIN ANALYZE SELECT * FROM customer_1991_2000 WHERE dob BETWEEN '1980-01-01' AND '1990-01-01';
 
+-- After Fragmentation, validate the fragment data !!
     -- Correctness of Horizontal Fragmenattion
         -- completeness:
             Reviewing the fragment tables-
