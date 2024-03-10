@@ -1,4 +1,4 @@
--- Create 3 users – super user, administrator, and customer.
+-- Create 3 users: super user, administrator, and customer.
 -- Create Users:
     -- Create superuser
     CREATE USER superuser WITH PASSWORD 'password_superuser' SUPERUSER;
@@ -95,7 +95,7 @@
     FROM information_schema.table_privileges
     WHERE table_catalog = 'kl_dpdb_ecommerce_database' AND grantee = 'customer';
 
--- Validation
+    -- Cross Validation
     psql -U customer -d kl_dpdb_ecommerce_database
     select * from products;
     delete from products where id='b136c1cf-d1e8-483f-9064-1c866f25195f';
