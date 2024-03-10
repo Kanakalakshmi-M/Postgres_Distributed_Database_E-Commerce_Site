@@ -48,7 +48,6 @@
             );
 
 -- PL/pgSQL code to place order by customer:
-
     CREATE OR REPLACE FUNCTION place_order_by_customer(
     p_customer_id UUID,
     p_product_id UUID,
@@ -94,7 +93,6 @@
     $$ LANGUAGE plpgsql;
 
 -- Input data to place the order by customer:
-
 DO $$ 
 BEGIN
 PERFORM place_order_by_customer(
@@ -107,7 +105,10 @@ PERFORM place_order_by_customer(
 );
 END $$;
 
--- usecase: use multiple tables such as customer products, orders, transaction_summary and get the successfully ordered products paid more than their average total.
+/* 
+usecase: use multiple tables such as customer products, orders, transaction_summary 
+and get the successfully ordered products paid more than their average total.
+*/
 
     SELECT prod.id AS product_id, prod.name AS product_name, ord.id AS order_id, ord.status AS order_status,
         ts.total_amount_paid, ts.payment_type, ts.date_of_payment
@@ -127,7 +128,7 @@ END $$;
                 WHERE customer_id = '668e5890-517a-4ae1-b909-03f39a3d8e6d')
         );
 
--- Analyze the data:
+-- Analyze the performance of query:
 EXPLAIN
 SELECT prod.id AS product_id, prod.name AS product_name, ord.id AS order_id, ord.status AS order_status, ts.total_amount_paid, ts.payment_type, ts.date_of_payment
 FROM products prod
@@ -144,7 +145,7 @@ WHERE ord.customer_id = '668e5890-517a-4ae1-b909-03f39a3d8e6d'AND pc.section = '
               WHERE customer_id = '668e5890-517a-4ae1-b909-03f39a3d8e6d')
        );
 
--- Validate Parallel execution of query:
+-- Implement parallel execution on the query for better performance.
 SET max_parallel_workers = 4;
 EXPLAIN
 SELECT prod.id AS product_id, prod.name AS product_name, ord.id AS order_id, ord.status AS order_status,
