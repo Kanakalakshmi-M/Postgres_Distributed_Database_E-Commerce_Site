@@ -6,7 +6,7 @@ host = "localhost"
 port = 5432
 database = "kl_dpdb_ecommerce_database"
 user = "postgres"
-password = "spaceman1236"
+password = "******"
 
 def place_order(product_id, customer_id, quantity, delivery_partner_name, phone_no, email):
     try:
